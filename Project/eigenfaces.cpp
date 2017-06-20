@@ -59,6 +59,19 @@ void Eigenfaces::read_csv(const string& filename, vector<Mat>& images, vector<in
     }
 }
 
+
+Ptr<BasicFaceRecognizer> Eigenfaces::loadEigenYML(){
+	Ptr<BasicFaceRecognizer> load = createEigenFaceRecognizer();
+	load->load("eigenfaces_at.yml");
+	return load;
+}
+
+void Eigenfaces::trainEigen(vector<Mat> images,vector<int> labels){
+	Ptr<BasicFaceRecognizer> trainModel = createEigenFaceRecognizer();
+	trainModel->train(images, labels);
+	trainModel->save("eigenfaces_at.yml");
+}
+
 void Eigenfaces::run() {
     // Check for valid command line arguments, print usage
     // if no arguments were given.
@@ -125,7 +138,9 @@ void Eigenfaces::run() {
     //      cv::createEigenFaceRecognizer(0, 123.0);
     //
     Ptr<BasicFaceRecognizer> model = createEigenFaceRecognizer();
-    model->train(images, labels);
+    //model->train(images, labels);
+	trainEigen(images, labels);
+	model = loadEigenYML();
     // The following line predicts the label of a given
     // test image:
     int predictedLabel = model->predict(testSample);

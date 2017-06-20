@@ -16,20 +16,13 @@
  *   See <http://www.opensource.org/licenses/bsd-license>
  */
 
-#include "opencv2/core.hpp"
-#include "opencv2/face.hpp"
-#include "opencv2/highgui.hpp"
-#include "opencv2/imgproc.hpp"
-
-#include <iostream>
-#include <fstream>
-#include <sstream>
+#include "fisherfaces.h"
 
 using namespace cv;
 using namespace cv::face;
 using namespace std;
 
-static Mat norm_0_255(InputArray _src) {
+Mat Fisherfaces::norm_0_255(InputArray _src) {
     Mat src = _src.getMat();
     // Create and return normalized image:
     Mat dst;
@@ -47,7 +40,7 @@ static Mat norm_0_255(InputArray _src) {
     return dst;
 }
 
-static void read_csv(const string& filename, vector<Mat>& images, vector<int>& labels, char separator = ';') {
+void Fisherfaces::read_csv(const string& filename, vector<Mat>& images, vector<int>& labels, char separator ) {
     std::ifstream file(filename.c_str(), ifstream::in);
     if (!file) {
         string error_message = "No valid input file was given, please check the given filename.";
@@ -65,9 +58,20 @@ static void read_csv(const string& filename, vector<Mat>& images, vector<int>& l
     }
 }
 
-int main(int argc, const char *argv[]) {
+void Fisherfaces::saveFisherYML(Ptr<BasicFaceRecognizer> model) {
+	model->save("fisherfaces_at.yml");
+}
+
+Ptr<BasicFaceRecognizer> Fisherfaces::loadFisherYML() {
+	Ptr<BasicFaceRecognizer> load = createFisherFaceRecognizer();
+	load->load("fisherfaces_at.yml");
+	return load;
+}
+
+void Fisherfaces::run() {
     // Check for valid command line arguments, print usage
     // if no arguments were given.
+	/*
     if (argc < 2) {
         cout << "usage: " << argv[0] << " <csv.ext> <output_folder> " << endl;
         exit(1);
@@ -78,6 +82,7 @@ int main(int argc, const char *argv[]) {
     }
     // Get the path to your CSV.
     string fn_csv = string(argv[1]);
+	*/
     // These vectors hold the images and corresponding labels.
     vector<Mat> images;
     vector<int> labels;
@@ -106,6 +111,8 @@ int main(int argc, const char *argv[]) {
     // the model with, do not overlap.
     Mat testSample = images[images.size() - 1];
     int testLabel = labels[labels.size() - 1];
+	imshow("testSample", testSample);
+
     images.pop_back();
     labels.pop_back();
     // The following lines create an Fisherfaces model for
@@ -127,7 +134,11 @@ int main(int argc, const char *argv[]) {
     //      cv::createFisherFaceRecognizer(0, 123.0);
     //
     Ptr<BasicFaceRecognizer> model = createFisherFaceRecognizer();
-    model->train(images, labels);
+    //model->train(images, labels);
+	//saveFisherYML(model);
+
+	model = loadFisherYML();
+
     // The following line predicts the label of a given
     // test image:
     int predictedLabel = model->predict(testSample);
@@ -147,11 +158,11 @@ int main(int argc, const char *argv[]) {
     // Get the sample mean from the training data
     Mat mean = model->getMean();
     // Display or save:
-    if(argc == 2) {
-        imshow("mean", norm_0_255(mean.reshape(1, images[0].rows)));
-    } else {
+   // if(argc == 2) {
+    //    imshow("mean", norm_0_255(mean.reshape(1, images[0].rows)));
+    //} else {
         imwrite(format("%s/mean.png", output_folder.c_str()), norm_0_255(mean.reshape(1, images[0].rows)));
-    }
+    //}
     // Display or save the first, at most 16 Fisherfaces:
     for (int i = 0; i < min(16, W.cols); i++) {
         string msg = format("Eigenvalue #%d = %.5f", i, eigenvalues.at<double>(i));
@@ -164,11 +175,11 @@ int main(int argc, const char *argv[]) {
         Mat cgrayscale;
         applyColorMap(grayscale, cgrayscale, COLORMAP_BONE);
         // Display or save:
-        if(argc == 2) {
-            imshow(format("fisherface_%d", i), cgrayscale);
-        } else {
+      //  if(argc == 2) {
+       //     imshow(format("fisherface_%d", i), cgrayscale);
+       // } else {
             imwrite(format("%s/fisherface_%d.png", output_folder.c_str(), i), norm_0_255(cgrayscale));
-        }
+       // }
     }
     // Display or save the image reconstruction at some predefined steps:
     for(int num_component = 0; num_component < min(16, W.cols); num_component++) {
@@ -179,15 +190,16 @@ int main(int argc, const char *argv[]) {
         // Normalize the result:
         reconstruction = norm_0_255(reconstruction.reshape(1, images[0].rows));
         // Display or save:
-        if(argc == 2) {
-            imshow(format("fisherface_reconstruction_%d", num_component), reconstruction);
-        } else {
+       // if(argc == 2) {
+       //     imshow(format("fisherface_reconstruction_%d", num_component), reconstruction);
+       // } else {
             imwrite(format("%s/fisherface_reconstruction_%d.png", output_folder.c_str(), num_component), reconstruction);
-        }
+      //  }
     }
+	/*
     // Display if we are not writing to an output folder:
     if(argc == 2) {
         waitKey(0);
     }
     return 0;
-}
+*/}
