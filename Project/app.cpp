@@ -62,7 +62,7 @@ void Kinect::initialize()
     initializeFace();
 
     // Initialize Recognition
-    initializeRecognition();
+    //initializeRecognition();
 
     // Wait a Few Seconds until begins to Retrieve Data from Sensor ( about 2000-[ms] )
     std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
@@ -137,12 +137,13 @@ inline void Kinect::initializeFace()
 }
 
 // Initialize Recognition
+/*
 inline void Kinect::initializeRecognition()
 {
     // Create Recognizer
     //recognizer = cv::face::createFisherFaceRecognizer();
     //recognizer = cv::face::createEigenFaceRecognizer();
-    recognizer = cv::face::createLBPHFaceRecognizer();
+    //recognizer = cv::face::createLBPHFaceRecognizer();
 
     // Load Recognizer
     recognizer->load( model );
@@ -151,8 +152,8 @@ inline void Kinect::initializeRecognition()
     }
 
     // Set Distance Threshold
-    recognizer->setThreshold( threshold );
-}
+    //recognizer->setThreshold( threshold );
+}*/
 
 // Finalize
 void Kinect::finalize()
@@ -183,7 +184,7 @@ void Kinect::update()
     updateFace();
 
     // Update Recognition
-    updateRecognition();
+    //updateRecognition();
 }
 
 // Update Color
@@ -299,7 +300,8 @@ inline void Kinect::updateRecognition()
         cv::cvtColor( faceMat, faceMat, cv::COLOR_BGRA2GRAY );
 
         // Recognition
-        recognizer->predict( faceMat, labels[count], distances[count] );
+       // recognizer->predict( faceMat, labels[count], distances[count] );
+		
     } );
 }
 
@@ -310,7 +312,7 @@ void Kinect::draw()
     drawColor();
 
     // Draw Recognition
-    drawRecognition();
+    //drawRecognition();
 }
 
 // Draw Color

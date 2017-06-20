@@ -44,7 +44,9 @@ private:
     std::array<ComPtr<IFaceFrameResult>, BODY_COUNT> results;
 
     // Face Recognition
-    cv::Ptr<cv::face::FaceRecognizer> recognizer;
+    //cv::Ptr<cv::face::FaceRecognizer> recognizer  = cv::face::createFisherFaceRecognizer();
+    //cv::Ptr<cv::face::FaceRecognizer> recognizer  = cv::face::createEigenFaceRecognizer();
+    //cv::Ptr<cv::face::FaceRecognizer> recognizer  = cv::face::createLBPHFaceRecognizer();;
     const std::string model = "../model.xml"; // Pre-Trained Model File Path ( *.xml or *.yaml )
     const double threshold = 40.0; // Max Matching Distance
     std::array<int, BODY_COUNT> labels;
@@ -59,10 +61,11 @@ public:
 
     // Processing
     void run();
+	// Initialize
+	void initialize();
 
 private:
-    // Initialize
-    void initialize();
+    
 
     // Initialize Sensor
     inline void initializeSensor();
@@ -75,10 +78,10 @@ private:
 
     // Initialize Face
     inline void initializeFace();
-
+	
     // Initialize Recognition
-    inline void initializeRecognition();
-
+   //nline void initializeRecognition();
+	
     // Finalize
     void finalize();
 
