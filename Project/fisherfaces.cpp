@@ -69,6 +69,7 @@ Ptr<BasicFaceRecognizer> Fisherfaces::loadFisherYML() {
 }
 
 void Fisherfaces::run() {
+	start = clock();
     // Check for valid command line arguments, print usage
     // if no arguments were given.
 	/*
@@ -151,6 +152,8 @@ void Fisherfaces::run() {
     //
     string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
     cout << result_message << endl;
+	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
+	cout << "duration =" << duration << endl;
     // Here is how to get the eigenvalues of this Eigenfaces model:
     Mat eigenvalues = model->getEigenValues();
     // And we can do the same to display the Eigenvectors (read Eigenfaces):

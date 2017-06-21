@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <ctime>
+#include <cstdio>
 #include <sstream>
 
 using namespace cv;
@@ -22,6 +24,8 @@ private:
 	Ptr<BasicFaceRecognizer> loadFisherYML();
 	string output_folder = "/output";
 	string fn_csv = "at.txt";
+	clock_t start;
+	double duration;
 public:
 	void run();
 

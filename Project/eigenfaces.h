@@ -8,6 +8,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cstdio>
+#include <ctime>
 
 using namespace cv;
 using namespace cv::face;
@@ -22,6 +24,8 @@ private:
 	Ptr<BasicFaceRecognizer> loadEigenYML();
 	string output_folder = "output/";
 	string fn_csv = "at.txt";
+	clock_t start;
+	double duration;
 public :
 	void run();
 

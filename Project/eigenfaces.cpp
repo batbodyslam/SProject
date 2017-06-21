@@ -73,6 +73,7 @@ void Eigenfaces::trainEigen(vector<Mat> images,vector<int> labels){
 }
 
 void Eigenfaces::run() {
+	start = clock();
     // Check for valid command line arguments, print usage
     // if no arguments were given.
 	/*
@@ -114,9 +115,18 @@ void Eigenfaces::run() {
     // done, so that the training data (which we learn the
     // cv::BasicFaceRecognizer on) and the test data we test
     // the model with, do not overlap.
+	//Mat testSample = imread("C:\\Users\\Pete\\Documents\\Visual Studio 2015\\Projects\\Project\\Project\\att_faces\\s20\\1.pgm");
     Mat testSample = images[images.size() - 1];
-    int testLabel = labels[labels.size() - 1];
-    images.pop_back();
+    //int testLabel = labels[labels.size() - 1];
+	int testLabel = 20;
+	if (!testSample.data)
+	{
+		cout << "Could not open testSample" << endl;
+		return ;
+	}
+	
+	int testHeight = testSample.rows;
+	images.pop_back();
     labels.pop_back();
     // The following lines create an Eigenfaces model for
     // face recognition and train it with the images and
@@ -139,7 +149,7 @@ void Eigenfaces::run() {
     //
     Ptr<BasicFaceRecognizer> model = createEigenFaceRecognizer();
     //model->train(images, labels);
-	trainEigen(images, labels);
+	//trainEigen(images, labels);
 	model = loadEigenYML();
     // The following line predicts the label of a given
     // test image:
@@ -153,6 +163,8 @@ void Eigenfaces::run() {
     //
     string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
     cout << result_message << endl;
+	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
+	cout << "duration = " <<duration << endl;
     // Here is how to get the eigenvalues of this Eigenfaces model:
     Mat eigenvalues = model->getEigenValues();
     // And we can do the same to display the Eigenvectors (read Eigenfaces):
