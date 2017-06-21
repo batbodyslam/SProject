@@ -12,6 +12,8 @@
 #include <string>
 
 #include <wrl/client.h>
+#include "eigenfaces.h"
+#include "fisherfaces.h"
 using namespace Microsoft::WRL;
 
 #include <array>
@@ -44,13 +46,13 @@ private:
     std::array<ComPtr<IFaceFrameResult>, BODY_COUNT> results;
 
     // Face Recognition
-    //cv::Ptr<cv::face::FaceRecognizer> recognizer  = cv::face::createFisherFaceRecognizer();
-    //cv::Ptr<cv::face::FaceRecognizer> recognizer  = cv::face::createEigenFaceRecognizer();
-    //cv::Ptr<cv::face::FaceRecognizer> recognizer  = cv::face::createLBPHFaceRecognizer();;
-    const std::string model = "../model.xml"; // Pre-Trained Model File Path ( *.xml or *.yaml )
+	cv::Ptr<cv::face::FaceRecognizer> recognizer;
+    const std::string model = "eigenfaces.xml"; // Pre-Trained Model File Path ( *.xml or *.yaml )
     const double threshold = 40.0; // Max Matching Distance
     std::array<int, BODY_COUNT> labels;
     std::array<double, BODY_COUNT> distances;
+	Fisherfaces _fisherfaces;
+	Eigenfaces _eigenfaces;
 
 public:
     // Constructor
@@ -80,7 +82,7 @@ private:
     inline void initializeFace();
 	
     // Initialize Recognition
-   //nline void initializeRecognition();
+    inline void initializeRecognition();
 	
     // Finalize
     void finalize();

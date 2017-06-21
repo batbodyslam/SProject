@@ -7,7 +7,7 @@
 #include "fisherfaces.h"
 int main(int argc, char* argv[])
 {
-	
+	/*
 	createCSV csv;
 	csv.run();
 	Eigenfaces _eigen;
@@ -18,7 +18,8 @@ int main(int argc, char* argv[])
 	std::cout << "fisherfaces running...." << endl;
 	_fisher.run();
 	std::cout << "fihserfaces Finish...." << endl;
-	/* //kinect
+	*/
+	 //kinect
 	try {
 		Kinect kinect;
 		kinect.run();
@@ -26,7 +27,7 @@ int main(int argc, char* argv[])
 	catch (std::exception& ex) {
 		std::cout << ex.what() << std::endl;
 	}
-	*/
+	
 	waitKey(0);
 	return 0;
 }

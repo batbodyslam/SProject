@@ -63,6 +63,9 @@ void Eigenfaces::read_csv(const string& filename, vector<Mat>& images, vector<in
 Ptr<BasicFaceRecognizer> Eigenfaces::loadEigenYML(){
 	Ptr<BasicFaceRecognizer> load = createEigenFaceRecognizer();
 	load->load("eigenfaces_at.yml");
+	if(load.empty()){
+		throw std::runtime_error("failed cv::face::FaceRecognizer::load()");
+	}
 	return load;
 }
 
@@ -70,6 +73,13 @@ void Eigenfaces::trainEigen(vector<Mat> images,vector<int> labels){
 	Ptr<BasicFaceRecognizer> trainModel = createEigenFaceRecognizer();
 	trainModel->train(images, labels);
 	trainModel->save("eigenfaces_at.yml");
+}
+
+Ptr<BasicFaceRecognizer> Eigenfaces::initializeEigen(double threshold){
+	Ptr<BasicFaceRecognizer> _eigenRecognize = createEigenFaceRecognizer();
+	_eigenRecognize = loadEigenYML();
+	_eigenRecognize->setThreshold(threshold);
+	return _eigenRecognize;
 }
 
 void Eigenfaces::run() {

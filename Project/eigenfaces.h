@@ -28,5 +28,6 @@ private:
 	double duration;
 public :
 	void run();
+	Ptr<BasicFaceRecognizer> initializeEigen(double threshold);
 
 };

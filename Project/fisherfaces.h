@@ -28,5 +28,5 @@ private:
 	double duration;
 public:
 	void run();
-
+	Ptr<BasicFaceRecognizer> initializeFisher(double threshold);
 };

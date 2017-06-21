@@ -62,7 +62,7 @@ void Kinect::initialize()
     initializeFace();
 
     // Initialize Recognition
-    //initializeRecognition();
+    initializeRecognition();
 
     // Wait a Few Seconds until begins to Retrieve Data from Sensor ( about 2000-[ms] )
     std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
@@ -137,23 +137,13 @@ inline void Kinect::initializeFace()
 }
 
 // Initialize Recognition
-/*
+
 inline void Kinect::initializeRecognition()
 {
-    // Create Recognizer
-    //recognizer = cv::face::createFisherFaceRecognizer();
-    //recognizer = cv::face::createEigenFaceRecognizer();
-    //recognizer = cv::face::createLBPHFaceRecognizer();
-
-    // Load Recognizer
-    recognizer->load( model );
-    if( recognizer.empty() ){
-        throw std::runtime_error( "failed cv::face::FaceRecognizer::load()" );
-    }
-
-    // Set Distance Threshold
-    //recognizer->setThreshold( threshold );
-}*/
+	//chose mode recognizer
+	//recognizer = _fisherfaces.initializeFisher(threshold);
+	recognizer = _eigenfaces.initializeEigen(threshold);
+}
 
 // Finalize
 void Kinect::finalize()
@@ -184,7 +174,7 @@ void Kinect::update()
     updateFace();
 
     // Update Recognition
-    //updateRecognition();
+    updateRecognition();
 }
 
 // Update Color
@@ -300,7 +290,7 @@ inline void Kinect::updateRecognition()
         cv::cvtColor( faceMat, faceMat, cv::COLOR_BGRA2GRAY );
 
         // Recognition
-       // recognizer->predict( faceMat, labels[count], distances[count] );
+        recognizer->predict( faceMat, labels[count], distances[count] );
 		
     } );
 }
@@ -312,7 +302,7 @@ void Kinect::draw()
     drawColor();
 
     // Draw Recognition
-    //drawRecognition();
+    drawRecognition();
 }
 
 // Draw Color
@@ -378,7 +368,7 @@ inline void Kinect::drawRecognitionResults( cv::Mat& image, const int label, con
     std::string result;
     if( label != -1 ){
         result = std::to_string( label ) + " (" + std::to_string( distance ) + ")";
-        //result = recognizer->getLabelInfo( label );
+        result = recognizer->getLabelInfo( label );
     }
     else{
         result = "Unknown";

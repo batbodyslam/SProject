@@ -65,25 +65,22 @@ void Fisherfaces::saveFisherYML(Ptr<BasicFaceRecognizer> model) {
 Ptr<BasicFaceRecognizer> Fisherfaces::loadFisherYML() {
 	Ptr<BasicFaceRecognizer> load = createFisherFaceRecognizer();
 	load->load("fisherfaces_at.yml");
+	if (load.empty()) {
+		throw std::runtime_error("failed cv::face::FaceRecognizer::load()");
+	}
 	return load;
+}
+
+Ptr<BasicFaceRecognizer> Fisherfaces::initializeFisher(double threshold) {
+	Ptr<BasicFaceRecognizer> _fisherRecognize = createFisherFaceRecognizer();
+	_fisherRecognize = loadFisherYML();
+	_fisherRecognize->setThreshold(threshold);
+	return _fisherRecognize;
 }
 
 void Fisherfaces::run() {
 	start = clock();
-    // Check for valid command line arguments, print usage
-    // if no arguments were given.
-	/*
-    if (argc < 2) {
-        cout << "usage: " << argv[0] << " <csv.ext> <output_folder> " << endl;
-        exit(1);
-    }
-    string output_folder = ".";
-    if (argc == 3) {
-        output_folder = string(argv[2]);
-    }
-    // Get the path to your CSV.
-    string fn_csv = string(argv[1]);
-	*/
+	
     // These vectors hold the images and corresponding labels.
     vector<Mat> images;
     vector<int> labels;
