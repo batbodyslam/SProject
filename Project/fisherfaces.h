@@ -20,13 +20,17 @@ class Fisherfaces
 private:
 	Mat norm_0_255(InputArray _src);
 	void read_csv(const string& filename, vector<Mat>& images, vector<int>& labels, char separator = ';');
-	void saveFisherYML(Ptr<BasicFaceRecognizer> model);
+	void trainFisher(string csv);
+	void predictSample(string path, int testLabel);
 	Ptr<BasicFaceRecognizer> loadFisherYML();
 	string output_folder = "/output";
+	int widthData = 92;
+	int heightData = 112;
 	string fn_csv = "at.txt";
 	clock_t start;
 	double duration;
 public:
 	void run();
 	Ptr<BasicFaceRecognizer> initializeFisher(double threshold);
+	void predict(Mat predictSample, int testLabel);
 };

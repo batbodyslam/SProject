@@ -69,7 +69,34 @@ Ptr<BasicFaceRecognizer> Eigenfaces::loadEigenYML(){
 	return load;
 }
 
-void Eigenfaces::trainEigen(vector<Mat> images,vector<int> labels){
+
+void Eigenfaces::trainEigen(string fn_csv) {
+
+	// These vectors hold the images and corresponding labels.
+	vector<Mat> images;
+	vector<int> labels;
+	// Read in the data. This can fail if no valid
+	// input filename is given.
+	try {
+		read_csv(fn_csv, images, labels);
+	}
+	catch (cv::Exception& e) {
+		cerr << "Error opening file \"" << fn_csv << "\". Reason: " << e.msg << endl;
+		// nothing more we can do
+		exit(1);
+	}
+
+	int height = images[0].rows;
+	int width = images[0].cols;
+	int channel = images[0].channels();
+	cout << "height = " << height << " width =" << width << " channels=" << channel << endl;
+
+	// Quit if there are not enough images for this demo.
+	if (images.size() <= 1) {
+		string error_message = "This demo needs at least 2 images to work. Please add more images to your data set!";
+		CV_Error(Error::StsError, error_message);
+	}
+
 	Ptr<BasicFaceRecognizer> trainModel = createEigenFaceRecognizer();
 	trainModel->train(images, labels);
 	trainModel->save("eigenfaces_at.yml");
@@ -82,22 +109,70 @@ Ptr<BasicFaceRecognizer> Eigenfaces::initializeEigen(double threshold){
 	return _eigenRecognize;
 }
 
+void Eigenfaces::predictSample(string path,int testLabel){
+
+	//Mat testSample = imread("C:\\Users\\Pete\\Documents\\Visual Studio 2015\\Projects\\Project\\Project\\s1\\1.pgm");
+	Mat testSample = imread(path);
+	cv::resize(testSample, testSample, cv::Size(widthData, heightData));
+	cv::cvtColor(testSample, testSample, CV_BGR2GRAY);
+	cout << "testSample Height" << testSample.rows << "Width " << testSample.cols << "CH "<<testSample.channels();
+
+	Ptr<BasicFaceRecognizer> model = createEigenFaceRecognizer();
+	//model->train(images, labels);
+	model = loadEigenYML();
+	// The following line predicts the label of a given
+	// test image:
+	int predictedLabel = model->predict(testSample);
+	//
+	// To get the confidence of a prediction call the model with:
+	//
+	//      int predictedLabel = -1;
+	//      double confidence = 0.0;
+	//      model->predict(testSample, predictedLabel, confidence);
+	//
+	string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
+	cout << result_message << endl;
+	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
+	cout << "duration = " << duration << endl;
+
+
+}
+
+void Eigenfaces::predict(Mat predictSample, int testLabel) {
+
+	//Mat testSample = imread("C:\\Users\\Pete\\Documents\\Visual Studio 2015\\Projects\\Project\\Project\\s1\\1.pgm");
+	//Mat testSample = imread(path);
+	Mat testSample = predictSample;
+	cv::resize(testSample, testSample, cv::Size(widthData, heightData));
+	cv::cvtColor(testSample, testSample, CV_BGR2GRAY);
+	cout << "testSample Height" << testSample.rows << "Width " << testSample.cols << "CH " << testSample.channels();
+
+
+	Ptr<BasicFaceRecognizer> model = createEigenFaceRecognizer();
+	//model->train(images, labels);
+	model = loadEigenYML();
+	// The following line predicts the label of a given
+	// test image:
+	int predictedLabel = model->predict(testSample);
+	//
+	// To get the confidence of a prediction call the model with:
+	//
+	//      int predictedLabel = -1;
+	//      double confidence = 0.0;
+	//      model->predict(testSample, predictedLabel, confidence);
+	//
+	string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
+	cout << result_message << endl;
+	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
+	cout << "duration = " << duration << endl;
+
+
+}
+
+
 void Eigenfaces::run() {
 	start = clock();
-    // Check for valid command line arguments, print usage
-    // if no arguments were given.
-	/*
-    if (argc < 2) {
-        cout << "usage: " << argv[0] << " <csv.ext> <output_folder> " << endl;
-        exit(1);
-    }
-    string output_folder = ".";
-    if (argc == 3) {
-        output_folder = string(argv[2]);
-    }
-	*/
-    // Get the path to your CSV.
-    //string fn_csv = string(argv[1]);
+  
 	
     // These vectors hold the images and corresponding labels.
     vector<Mat> images;
@@ -120,14 +195,23 @@ void Eigenfaces::run() {
     // later in code to reshape the images to their original
     // size:
     int height = images[0].rows;
+	int width = images[0].cols;
+	int channel = images[0].channels();
     // The following lines simply get the last images from
     // your dataset and remove it from the vector. This is
     // done, so that the training data (which we learn the
     // cv::BasicFaceRecognizer on) and the test data we test
     // the model with, do not overlap.
-	//Mat testSample = imread("C:\\Users\\Pete\\Documents\\Visual Studio 2015\\Projects\\Project\\Project\\att_faces\\s20\\1.pgm");
-    Mat testSample = images[images.size() - 1];
+	Mat testSample = imread("C:\\Users\\Pete\\Documents\\Visual Studio 2015\\Projects\\Project\\Project\\s1\\1.pgm");
+	imshow("testSample", testSample);
+	//Mat _sample = imread("C:\\Users\\Pete\\Documents\\Visual Studio 2015\\Projects\\Project\\Project\\att_faces\\s1\\1.pgm");
+	cout << "height = "<<height<<" width =" << width <<" channels="<<channel<< endl;
+	resize(testSample, testSample, Size(width,height));
+	cout << "test sample height = " << testSample.rows << "test width = " << testSample.cols << "test channel = " << testSample.channels() << endl;
+	//Mat testSample = images[images.size() - 1];
     //int testLabel = labels[labels.size() - 1];
+	cvtColor(testSample, testSample, CV_BGR2GRAY);
+	cout << "new channels" << testSample.channels() << endl;;
 	int testLabel = 20;
 	if (!testSample.data)
 	{
@@ -138,28 +222,9 @@ void Eigenfaces::run() {
 	int testHeight = testSample.rows;
 	images.pop_back();
     labels.pop_back();
-    // The following lines create an Eigenfaces model for
-    // face recognition and train it with the images and
-    // labels read from the given CSV file.
-    // This here is a full PCA, if you just want to keep
-    // 10 principal components (read Eigenfaces), then call
-    // the factory method like this:
-    //
-    //      cv::createEigenFaceRecognizer(10);
-    //
-    // If you want to create a FaceRecognizer with a
-    // confidence threshold (e.g. 123.0), call it with:
-    //
-    //      cv::createEigenFaceRecognizer(10, 123.0);
-    //
-    // If you want to use _all_ Eigenfaces and have a threshold,
-    // then call the method like this:
-    //
-    //      cv::createEigenFaceRecognizer(0, 123.0);
-    //
+
     Ptr<BasicFaceRecognizer> model = createEigenFaceRecognizer();
     //model->train(images, labels);
-	//trainEigen(images, labels);
 	model = loadEigenYML();
     // The following line predicts the label of a given
     // test image:

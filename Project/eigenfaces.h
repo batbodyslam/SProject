@@ -20,8 +20,11 @@ class Eigenfaces
 private:
 	Mat norm_0_255(InputArray _src);
 	void read_csv(const string& filename, vector<Mat>& images, vector<int>& labels, char separator = ';');
-	void trainEigen(vector<Mat> images,vector<int> labels);
+	void trainEigen(string csv);
+	void predictSample(string path,int testLabel);
 	Ptr<BasicFaceRecognizer> loadEigenYML();
+	int widthData = 92;
+	int heightData = 112;
 	string output_folder = "output/";
 	string fn_csv = "at.txt";
 	clock_t start;
@@ -29,5 +32,5 @@ private:
 public :
 	void run();
 	Ptr<BasicFaceRecognizer> initializeEigen(double threshold);
-
+	void predict(Mat predictSample, int testLabel);
 };

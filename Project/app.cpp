@@ -275,22 +275,29 @@ inline void Kinect::updateRecognition()
         // Retrieve Face Bounding Box
         RectI boundingBox;
         ERROR_CHECK( result->get_FaceBoundingBoxInColorSpace( &boundingBox ) );
-
         // Retrieve Face
         const cv::Rect roi = { boundingBox.Left, boundingBox.Top, ( boundingBox.Right - boundingBox.Left ), ( boundingBox.Bottom - boundingBox.Top ) };
         cv::Mat faceMat = colorMat( roi ).clone();
         if( faceMat.empty() ){
             return;
         }
-
+		cout << "2222222222222" << endl;
+		numcomponents++;
         // Resize
-        //cv::resize( faceMat, faceMat, cv::Size( 200, 200 ) );
+        cv::resize( faceMat, faceMat, cv::Size( 92, 112 ) );
 
         // Convert BGRA to Gray
         cv::cvtColor( faceMat, faceMat, cv::COLOR_BGRA2GRAY );
-
+		cv::imshow("faceMat", faceMat);
+		//cv::imwrite(format("output/testface%d.png", numcomponents), faceMat);
+		//waitKey(0);
+		cout << "3333333333333333333" << endl;
         // Recognition
-        recognizer->predict( faceMat, labels[count], distances[count] );
+       recognizer->predict( faceMat, labels[count], distances[count] );
+	   //int predictLabel = recognizer->predict(faceMat);
+	   cout << "44444444444444444" << endl;
+	   //string result_message = format("Predicted class = %d ", recognizer);
+	   //cout << result_message << endl;
 		
     } );
 }
@@ -325,7 +332,7 @@ inline void Kinect::drawRecognition()
             return;
         }
 
-        std::cout << count << std::endl;
+        //std::cout << count << std::endl;
 
         // Retrieve Label and Distance
         const int label = labels[count];

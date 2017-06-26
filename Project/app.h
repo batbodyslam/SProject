@@ -47,6 +47,7 @@ private:
 
     // Face Recognition
 	cv::Ptr<cv::face::FaceRecognizer> recognizer;
+	int numcomponents = 0;
     const std::string model = "eigenfaces.xml"; // Pre-Trained Model File Path ( *.xml or *.yaml )
     const double threshold = 40.0; // Max Matching Distance
     std::array<int, BODY_COUNT> labels;

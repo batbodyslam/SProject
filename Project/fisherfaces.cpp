@@ -58,9 +58,40 @@ void Fisherfaces::read_csv(const string& filename, vector<Mat>& images, vector<i
     }
 }
 
-void Fisherfaces::saveFisherYML(Ptr<BasicFaceRecognizer> model) {
-	model->save("fisherfaces_at.yml");
+
+
+void Fisherfaces::trainFisher(string fn_csv) {
+
+	// These vectors hold the images and corresponding labels.
+	vector<Mat> images;
+	vector<int> labels;
+	// Read in the data. This can fail if no valid
+	// input filename is given.
+	try {
+		read_csv(fn_csv, images, labels);
+	}
+	catch (cv::Exception& e) {
+		cerr << "Error opening file \"" << fn_csv << "\". Reason: " << e.msg << endl;
+		// nothing more we can do
+		exit(1);
+	}
+
+	int height = images[0].rows;
+	int width = images[0].cols;
+	int channel = images[0].channels();
+	cout << "height = " << height << " width =" << width << " channels=" << channel << endl;
+
+	// Quit if there are not enough images for this demo.
+	if (images.size() <= 1) {
+		string error_message = "This demo needs at least 2 images to work. Please add more images to your data set!";
+		CV_Error(Error::StsError, error_message);
+	}
+
+	Ptr<BasicFaceRecognizer> trainModel = createFisherFaceRecognizer();
+	trainModel->train(images, labels);
+	trainModel->save("fisherfaces_at.yml");
 }
+
 
 Ptr<BasicFaceRecognizer> Fisherfaces::loadFisherYML() {
 	Ptr<BasicFaceRecognizer> load = createFisherFaceRecognizer();
@@ -76,6 +107,65 @@ Ptr<BasicFaceRecognizer> Fisherfaces::initializeFisher(double threshold) {
 	_fisherRecognize = loadFisherYML();
 	_fisherRecognize->setThreshold(threshold);
 	return _fisherRecognize;
+}
+
+void Fisherfaces::predictSample(string path, int testLabel) {
+
+	//Mat testSample = imread("C:\\Users\\Pete\\Documents\\Visual Studio 2015\\Projects\\Project\\Project\\s1\\1.pgm");
+	Mat testSample = imread(path);
+	cv::resize(testSample, testSample, cv::Size(widthData, heightData));
+	cv::cvtColor(testSample, testSample, CV_BGR2GRAY);
+	cout << "testSample Height" << testSample.rows << "Width " << testSample.cols << "CH " << testSample.channels();
+
+	Ptr<BasicFaceRecognizer> model = createFisherFaceRecognizer();
+	//model->train(images, labels);
+	model = loadFisherYML();
+	// The following line predicts the label of a given
+	// test image:
+	int predictedLabel = model->predict(testSample);
+	//
+	// To get the confidence of a prediction call the model with:
+	//
+	//      int predictedLabel = -1;
+	//      double confidence = 0.0;
+	//      model->predict(testSample, predictedLabel, confidence);
+	//
+	string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
+	cout << result_message << endl;
+	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
+	cout << "duration = " << duration << endl;
+
+
+}
+
+void Fisherfaces::predict(Mat predictSample, int testLabel) {
+
+	//Mat testSample = imread("C:\\Users\\Pete\\Documents\\Visual Studio 2015\\Projects\\Project\\Project\\s1\\1.pgm");
+	//Mat testSample = imread(path);
+	Mat testSample = predictSample;
+	cv::resize(testSample, testSample, cv::Size(widthData, heightData));
+	cv::cvtColor(testSample, testSample, CV_BGR2GRAY);
+	cout << "testSample Height" << testSample.rows << "Width " << testSample.cols << "CH " << testSample.channels();
+
+	Ptr<BasicFaceRecognizer> model = createFisherFaceRecognizer();
+	//model->train(images, labels);
+	model = loadFisherYML();
+	// The following line predicts the label of a given
+	// test image:
+	int predictedLabel = model->predict(testSample);
+	//
+	// To get the confidence of a prediction call the model with:
+	//
+	//      int predictedLabel = -1;
+	//      double confidence = 0.0;
+	//      model->predict(testSample, predictedLabel, confidence);
+	//
+	string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
+	cout << result_message << endl;
+	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
+	cout << "duration = " << duration << endl;
+
+
 }
 
 void Fisherfaces::run() {
@@ -107,8 +197,9 @@ void Fisherfaces::run() {
     // done, so that the training data (which we learn the
     // cv::BasicFaceRecognizer on) and the test data we test
     // the model with, do not overlap.
-    Mat testSample = images[images.size() - 1];
-    int testLabel = labels[labels.size() - 1];
+	Mat testSample = imread("C:\\Users\\Pete\\Documents\\Visual Studio 2015\\Projects\\Project\\Project\\s1\\1.pgm");
+    //Mat testSample = images[images.size() - 1];
+    int testLabel = 1;
 	imshow("testSample", testSample);
 
     images.pop_back();
@@ -133,8 +224,7 @@ void Fisherfaces::run() {
     //
     Ptr<BasicFaceRecognizer> model = createFisherFaceRecognizer();
     //model->train(images, labels);
-	//saveFisherYML(model);
-
+	//trainFisher(images, labels);
 	model = loadFisherYML();
 
     // The following line predicts the label of a given

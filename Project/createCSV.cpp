@@ -11,6 +11,9 @@ void createCSV::run(){
 			for (int j = 1; j < 6; j++) {
 				myfile << "C:/Users/Pete/Documents/Visual Studio 2015/Projects/Project/Project/att_faces/s" + to_string(i) + "/" + to_string(j) + ".pgm;" + to_string(i - 1) + "\n";
 			}
+		for(int i=1;i<10;i++){
+			myfile << "C:/Users/Pete/Documents/Visual Studio 2015/Projects/Project/Project/att_faces/p1/testface" + to_string(i) +  ".png;20" +"\n";
+		}
 			myfile.close();
 	}
 	else cout << "Unable to open file";
