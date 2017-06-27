@@ -107,7 +107,7 @@ void Eigenfaces::trainEigen(string fn_csv) {
 Ptr<BasicFaceRecognizer> Eigenfaces::initializeEigen(double threshold){
 	Ptr<BasicFaceRecognizer> _eigenRecognize = createEigenFaceRecognizer();
 	_eigenRecognize = loadEigenYML();
-	//_eigenRecognize->setThreshold(threshold);
+	_eigenRecognize->setThreshold(threshold);
 	//_eigenRecognize->setNumComponents(0);
 	return _eigenRecognize;
 }
