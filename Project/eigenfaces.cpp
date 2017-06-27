@@ -108,6 +108,7 @@ Ptr<BasicFaceRecognizer> Eigenfaces::initializeEigen(double threshold){
 	Ptr<BasicFaceRecognizer> _eigenRecognize = createEigenFaceRecognizer();
 	_eigenRecognize = loadEigenYML();
 	//_eigenRecognize->setThreshold(threshold);
+	//_eigenRecognize->setNumComponents(0);
 	return _eigenRecognize;
 }
 
@@ -147,12 +148,14 @@ void Eigenfaces::predict(Mat predictSample, int testLabel) {
 	Mat testSample = predictSample;
 	cv::resize(testSample, testSample, cv::Size(widthData, heightData));
 	cv::cvtColor(testSample, testSample, CV_BGR2GRAY);
-	cout << "testSample Height" << testSample.rows << "Width " << testSample.cols << "CH " << testSample.channels();
+	cout << "testSample Height" << testSample.rows << "Width " << testSample.cols << "CH " << testSample.channels() <<endl;
 
 
 	Ptr<BasicFaceRecognizer> model = createEigenFaceRecognizer();
 	//model->train(images, labels);
 	model = loadEigenYML();
+	model->setThreshold(5000.0);
+	cout << "threshold = " <<model->getThreshold() << endl;
 	// The following line predicts the label of a given
 	// test image:
 	double distance = 0.0;
@@ -167,7 +170,7 @@ void Eigenfaces::predict(Mat predictSample, int testLabel) {
 	//      double confidence = 0.0;
 	//      model->predict(testSample, predictedLabel, confidence);
 	//
-	string result_message = format("Predicted class = %d / Actual class = %d / Label = %d", predictedLabel, testLabel,label);
+	string result_message = format("Predicted class = %d / Actual class = %d / Label = %d / Distance = %d", predictedLabel, testLabel,label,distance);
 	cout << result_message << endl;
 	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
 	cout << "duration = " << duration << endl;

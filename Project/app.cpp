@@ -124,7 +124,20 @@ inline void Kinect::initializeBody()
 inline void Kinect::initializeFace()
 {
     // Set Face Features to Enable
-    const DWORD features = FaceFrameFeatures::FaceFrameFeatures_BoundingBoxInColorSpace;
+	// Set Face Features to Enable
+	const DWORD features =
+		FaceFrameFeatures::FaceFrameFeatures_BoundingBoxInColorSpace
+		| FaceFrameFeatures::FaceFrameFeatures_PointsInColorSpace
+		| FaceFrameFeatures::FaceFrameFeatures_RotationOrientation
+		| FaceFrameFeatures::FaceFrameFeatures_Happy
+		| FaceFrameFeatures::FaceFrameFeatures_RightEyeClosed
+		| FaceFrameFeatures::FaceFrameFeatures_LeftEyeClosed
+		| FaceFrameFeatures::FaceFrameFeatures_MouthOpen
+		| FaceFrameFeatures::FaceFrameFeatures_MouthMoved
+		| FaceFrameFeatures::FaceFrameFeatures_LookingAway
+		| FaceFrameFeatures::FaceFrameFeatures_Glasses
+		| FaceFrameFeatures::FaceFrameFeatures_FaceEngagement;
+
 
     Concurrency::parallel_for( 0, BODY_COUNT, [&]( const int count ){
         // Create Face Sources
@@ -353,14 +366,39 @@ inline void Kinect::drawRecognition()
         // Set Draw Color by Recognition Results
         const cv::Vec3b color = ( label != -1 ) ? cv::Vec3b( 0, 255, 0 ) : cv::Vec3b( 0, 0, 255 );
 
-        // Draw Face Bounding Box
+		// Retrieve Face Points
+		std::array<PointF, FacePointType::FacePointType_Count> facePoints;
+		ERROR_CHECK(result->GetFacePointsInColorSpace(FacePointType::FacePointType_Count, &facePoints[0]));
+		drawFacePoints(colorMat, facePoints, 5, color);
+		
+		// Draw Face Bounding Box
         RectI boundingBox;
         ERROR_CHECK( result->get_FaceBoundingBoxInColorSpace( &boundingBox ) );
         drawFaceBoundingBox( colorMat, boundingBox, color );
 
+		// Retrieve Face Rotation Quaternion
+		Vector4 rotationQuaternion;
+		ERROR_CHECK(result->get_FaceRotationQuaternion(&rotationQuaternion));
+		drawFaceRotation(colorMat, rotationQuaternion, boundingBox, 1.0, color);
+
         // Draw Recognition Results
         drawRecognitionResults( colorMat, label, distance, cv::Point( boundingBox.Left, boundingBox.Top ), 1.0, color );
     } );
+}
+
+// Draw Face Points
+inline void Kinect::drawFacePoints(cv::Mat& image, const std::array<PointF, FacePointType::FacePointType_Count>& points, const int radius, const cv::Vec3b& color, const int thickness)
+{
+	if (image.empty()) {
+		return;
+	}
+
+	// Draw Points
+	Concurrency::parallel_for_each(points.begin(), points.end(), [&](const PointF point) {
+		const int x = static_cast<int>(point.X + 0.5f);
+		const int y = static_cast<int>(point.Y + 0.5f);
+		cv::circle(image, cv::Point(x, y), radius, static_cast<cv::Scalar>(color), thickness, cv::LINE_AA);
+	});
 }
 
 // Draw Face Bounding Box
@@ -374,6 +412,40 @@ inline void Kinect::drawFaceBoundingBox( cv::Mat& image, const RectI& box, const
     const int width = box.Right - box.Left;
     const int height = box.Bottom - box.Top;
     cv::rectangle( image, cv::Rect( box.Left, box.Top, width, height ), color, thickness, cv::LINE_AA );
+}
+
+// Draw Face Rotation Quaternion
+inline void Kinect::drawFaceRotation(cv::Mat& image, Vector4& quaternion, const RectI& box, const double fontScale, const cv::Vec3b& color, const int thickness)
+{
+	if (image.empty()) {
+		return;
+	}
+
+	// Convert Quaternion to Degree
+	int pitch, yaw, roll;
+	quaternion2degree(&quaternion, &pitch, &yaw, &roll);
+
+	// Draw Rotation
+	const int offset = 30;
+	if (box.Left && box.Bottom) {
+		std::string rotation = "Pitch, Yaw, Roll : " + std::to_string(pitch) + ", " + std::to_string(yaw) + ", " + std::to_string(roll);
+		cv::putText(image, rotation, cv::Point(box.Left, box.Bottom + offset), cv::FONT_HERSHEY_SIMPLEX, fontScale, color, thickness, cv::LINE_AA);
+	}
+}
+
+
+
+// Convert Quaternion to Degree
+inline void Kinect::quaternion2degree(const Vector4* quaternion, int* pitch, int* yaw, int* roll)
+{
+	const double x = quaternion->x;
+	const double y = quaternion->y;
+	const double z = quaternion->z;
+	const double w = quaternion->w;
+
+	*pitch = static_cast<int>(std::atan2(2 * (y * z + w * x), w * w - x * x - y * y + z * z) / M_PI * 180.0f);
+	*yaw = static_cast<int>(std::asin(2 * (w * y - x * z)) / M_PI * 180.0f);
+	*roll = static_cast<int>(std::atan2(2 * (x * y + w * z), w * w + x * x - y * y - z * z) / M_PI * 180.0f);
 }
 
 // Draw Recognition Results

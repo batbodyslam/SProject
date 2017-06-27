@@ -112,6 +112,15 @@ private:
     // Draw Recognition
     inline void drawRecognition();
 
+	// Draw Face Points
+	inline void drawFacePoints(cv::Mat& image, const std::array<PointF, FacePointType::FacePointType_Count>& points, const int radius, const cv::Vec3b& color, const int thickness = -1);
+
+	// Draw Face Rotation
+	inline void drawFaceRotation(cv::Mat& image, Vector4& quaternion, const RectI& box, const double fontScale, const cv::Vec3b& color, const int thickness = 2);
+
+	// Convert Quaternion to Degree
+	inline void quaternion2degree(const Vector4* quaternion, int* pitch, int* yaw, int* roll);
+
     // Draw Face Bounding Box
     inline void drawFaceBoundingBox( cv::Mat& image, const RectI& box, const cv::Vec3b& color, const int thickness = 1 );
 

@@ -117,14 +117,17 @@ void Fisherfaces::predictSample(string path, int testLabel) {
 	Mat testSample = imread(path);
 	cv::resize(testSample, testSample, cv::Size(widthData, heightData));
 	cv::cvtColor(testSample, testSample, CV_BGR2GRAY);
-	cout << "testSample Height" << testSample.rows << "Width " << testSample.cols << "CH " << testSample.channels();
+	cout << "testSample Height" << testSample.rows << "Width " << testSample.cols << "CH " << testSample.channels() << endl;
 
 	Ptr<BasicFaceRecognizer> model = createFisherFaceRecognizer();
 	//model->train(images, labels);
 	model = loadFisherYML();
 	// The following line predicts the label of a given
 	// test image:
-	int predictedLabel = model->predict(testSample);
+	//int predictedLabel = model->predict(testSample);
+	int predictedLabel = -1;
+	double confidence = 0.0;
+	model->predict(testSample, predictedLabel, confidence);
 	//
 	// To get the confidence of a prediction call the model with:
 	//
@@ -132,7 +135,7 @@ void Fisherfaces::predictSample(string path, int testLabel) {
 	//      double confidence = 0.0;
 	//      model->predict(testSample, predictedLabel, confidence);
 	//
-	string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
+	string result_message = format("Predicted class = %d / Actual class = %d. / Confidence = %d", predictedLabel, testLabel,confidence);
 	cout << result_message << endl;
 	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
 	cout << "duration = " << duration << endl;
@@ -147,14 +150,17 @@ void Fisherfaces::predict(Mat predictSample, int testLabel) {
 	Mat testSample = predictSample;
 	cv::resize(testSample, testSample, cv::Size(widthData, heightData));
 	cv::cvtColor(testSample, testSample, CV_BGR2GRAY);
-	cout << "testSample Height" << testSample.rows << "Width " << testSample.cols << "CH " << testSample.channels();
+	cout << "testSample Height" << testSample.rows << "Width " << testSample.cols << "CH " << testSample.channels() << endl;
 
 	Ptr<BasicFaceRecognizer> model = createFisherFaceRecognizer();
 	//model->train(images, labels);
 	model = loadFisherYML();
 	// The following line predicts the label of a given
 	// test image:
-	int predictedLabel = model->predict(testSample);
+	int predictedLabel = -1;
+	double confidence = 0.0;
+
+	model->predict(testSample, predictedLabel, confidence);
 	//
 	// To get the confidence of a prediction call the model with:
 	//
@@ -162,7 +168,7 @@ void Fisherfaces::predict(Mat predictSample, int testLabel) {
 	//      double confidence = 0.0;
 	//      model->predict(testSample, predictedLabel, confidence);
 	//
-	string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
+	string result_message = format("Predicted class = %d / Actual class = %d. / Confidence = %d", predictedLabel, testLabel, confidence);
 	cout << result_message << endl;
 	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
 	cout << "duration = " << duration << endl;
