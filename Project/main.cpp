@@ -8,6 +8,8 @@
 int main(int argc, char* argv[])
 {
 	
+
+
 	//createCSV csv;
 	//csv.run();
 	Mat testSample = imread("C:\\Users\\Pete\\Documents\\Visual Studio 2015\\Projects\\Project\\Project\\faceMat.png");
@@ -17,14 +19,16 @@ int main(int argc, char* argv[])
 	
 	Eigenfaces _eigen;
 	std::cout << "eigenfaces running...." << endl;
-	_eigen.predict(testSample, 20);
+	//_eigen.trainEigen("at.txt");
+	_eigen.predict(testSample, 21);
 	std::cout << "eigenfaces Finnish...." << endl;
 	Fisherfaces _fisher;
+	//_fisher.trainFisher("at.txt");
 	std::cout << "fisherfaces running...." << endl;
-	_fisher.predict(testSample, 20);
+	_fisher.predict(testSample, 21);
 	std::cout << "fihserfaces Finish...." << endl;
 	*/
-
+	
 	 //kinect
 	try {
 		Kinect kinect;

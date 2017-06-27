@@ -49,7 +49,7 @@ private:
 	cv::Ptr<cv::face::FaceRecognizer> recognizer;
 	int numcomponents = 0;
     const std::string model = "eigenfaces.xml"; // Pre-Trained Model File Path ( *.xml or *.yaml )
-    const double threshold = 40.0; // Max Matching Distance
+    const double threshold = DBL_MAX; // Max Matching Distance = 40
     std::array<int, BODY_COUNT> labels;
     std::array<double, BODY_COUNT> distances;
 	Fisherfaces _fisherfaces;

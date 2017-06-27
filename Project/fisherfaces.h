@@ -11,6 +11,8 @@
 #include <cstdio>
 #include <sstream>
 
+#include "createCSV.h"
+
 using namespace cv;
 using namespace cv::face;
 using namespace std;
@@ -20,7 +22,6 @@ class Fisherfaces
 private:
 	Mat norm_0_255(InputArray _src);
 	void read_csv(const string& filename, vector<Mat>& images, vector<int>& labels, char separator = ';');
-	void trainFisher(string csv);
 	void predictSample(string path, int testLabel);
 	Ptr<BasicFaceRecognizer> loadFisherYML();
 	string output_folder = "/output";
@@ -29,8 +30,11 @@ private:
 	string fn_csv = "at.txt";
 	clock_t start;
 	double duration;
+	createCSV CSV;
+
 public:
 	void run();
 	Ptr<BasicFaceRecognizer> initializeFisher(double threshold);
+	void trainFisher(string csv);
 	void predict(Mat predictSample, int testLabel);
 };

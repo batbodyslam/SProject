@@ -11,6 +11,8 @@
 #include <cstdio>
 #include <ctime>
 
+#include "createCSV.h"
+
 using namespace cv;
 using namespace cv::face;
 using namespace std;
@@ -20,7 +22,6 @@ class Eigenfaces
 private:
 	Mat norm_0_255(InputArray _src);
 	void read_csv(const string& filename, vector<Mat>& images, vector<int>& labels, char separator = ';');
-	void trainEigen(string csv);
 	void predictSample(string path,int testLabel);
 	Ptr<BasicFaceRecognizer> loadEigenYML();
 	int widthData = 92;
@@ -29,8 +30,11 @@ private:
 	string fn_csv = "at.txt";
 	clock_t start;
 	double duration;
+	createCSV CSV;
+
 public :
 	void run();
 	Ptr<BasicFaceRecognizer> initializeEigen(double threshold);
+	void trainEigen(string csv);
 	void predict(Mat predictSample, int testLabel);
 };

@@ -72,6 +72,8 @@ Ptr<BasicFaceRecognizer> Eigenfaces::loadEigenYML(){
 
 void Eigenfaces::trainEigen(string fn_csv) {
 
+	CSV.run();
+
 	// These vectors hold the images and corresponding labels.
 	vector<Mat> images;
 	vector<int> labels;
@@ -105,7 +107,7 @@ void Eigenfaces::trainEigen(string fn_csv) {
 Ptr<BasicFaceRecognizer> Eigenfaces::initializeEigen(double threshold){
 	Ptr<BasicFaceRecognizer> _eigenRecognize = createEigenFaceRecognizer();
 	_eigenRecognize = loadEigenYML();
-	_eigenRecognize->setThreshold(threshold);
+	//_eigenRecognize->setThreshold(threshold);
 	return _eigenRecognize;
 }
 
@@ -153,7 +155,11 @@ void Eigenfaces::predict(Mat predictSample, int testLabel) {
 	model = loadEigenYML();
 	// The following line predicts the label of a given
 	// test image:
+	double distance = 0.0;
+	int label = -1;
 	int predictedLabel = model->predict(testSample);
+	model->predict(testSample, label, distance);
+	//model->predict()
 	//
 	// To get the confidence of a prediction call the model with:
 	//
@@ -161,7 +167,7 @@ void Eigenfaces::predict(Mat predictSample, int testLabel) {
 	//      double confidence = 0.0;
 	//      model->predict(testSample, predictedLabel, confidence);
 	//
-	string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
+	string result_message = format("Predicted class = %d / Actual class = %d / Label = %d", predictedLabel, testLabel,label);
 	cout << result_message << endl;
 	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
 	cout << "duration = " << duration << endl;

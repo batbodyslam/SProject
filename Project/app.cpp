@@ -281,24 +281,36 @@ inline void Kinect::updateRecognition()
         if( faceMat.empty() ){
             return;
         }
-		cout << "2222222222222" << endl;
-		numcomponents++;
+		cout << "count = " << count << endl;
+		
+
+		//test
+		//faceMat = imread("C:\\Users\\Pete\\Documents\\Visual Studio 2015\\Projects\\Project\\Project\\faceMat.png");
+
         // Resize
         cv::resize( faceMat, faceMat, cv::Size( 92, 112 ) );
 
         // Convert BGRA to Gray
         cv::cvtColor( faceMat, faceMat, cv::COLOR_BGRA2GRAY );
 		cv::imshow("faceMat", faceMat);
-		//cv::imwrite(format("output/testface%d.png", numcomponents), faceMat);
+		if (GetAsyncKeyState(VK_SPACE))
+		{
+			numcomponents++;
+			cv::imwrite(format("output/testface%d.png", numcomponents), faceMat);
+			std::cout << "Space pressed!";
+		}
+		
 		//waitKey(0);
-		cout << "3333333333333333333" << endl;
+
+		 
+
+	
         // Recognition
        recognizer->predict( faceMat, labels[count], distances[count] );
 	   //int predictLabel = recognizer->predict(faceMat);
-	   cout << "44444444444444444" << endl;
 	   //string result_message = format("Predicted class = %d ", recognizer);
 	   //cout << result_message << endl;
-		
+	   cout << "labels = " << labels[count] << " distance = " << distances[count] << endl;
     } );
 }
 
@@ -375,7 +387,8 @@ inline void Kinect::drawRecognitionResults( cv::Mat& image, const int label, con
     std::string result;
     if( label != -1 ){
         result = std::to_string( label ) + " (" + std::to_string( distance ) + ")";
-        result = recognizer->getLabelInfo( label );
+        //result = recognizer->getLabelInfo( label );
+		cout << result << endl;
     }
     else{
         result = "Unknown";

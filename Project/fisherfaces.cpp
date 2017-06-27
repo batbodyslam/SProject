@@ -62,6 +62,8 @@ void Fisherfaces::read_csv(const string& filename, vector<Mat>& images, vector<i
 
 void Fisherfaces::trainFisher(string fn_csv) {
 
+	CSV.run();
+
 	// These vectors hold the images and corresponding labels.
 	vector<Mat> images;
 	vector<int> labels;
